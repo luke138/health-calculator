@@ -49,9 +49,43 @@
 
     <style>
         body {
-            font-family: 'Pretendard', sans-serif;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background-color: #f3f4f6;
             overflow-x: hidden;
+        }
+
+        /* ===== 위기감 수치 강조 스타일 ===== */
+        /* 레드 Extra Bold - 심각한 위기 수치 (인지 나이, 요양 기간, 필요 자금 등) */
+        .crisis-num-red {
+            color: #dc2626 !important;
+            font-weight: 900 !important;
+            letter-spacing: -1.5px;
+        }
+        /* 오렌지 Extra Bold - 경고 수치 (건강수명, 격차 등) */
+        .crisis-num-orange {
+            color: #ea580c !important;
+            font-weight: 900 !important;
+            letter-spacing: -1.5px;
+        }
+        /* 위기 배지 (격차, 기간 강조) */
+        .crisis-badge {
+            background: linear-gradient(135deg, #fff1f2, #ffe4e6);
+            border: 1.5px solid #fecaca;
+            border-radius: 10px;
+            padding: 8px 14px;
+            text-align: center;
+        }
+        .crisis-badge .crisis-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #991b1b;
+            margin-bottom: 4px;
+        }
+        .crisis-badge .crisis-value {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: #dc2626;
+            letter-spacing: -1px;
         }
 
         .hide-scrollbar::-webkit-scrollbar {
@@ -780,13 +814,59 @@
     <div class="w-full max-w-md bg-white h-full shadow-2xl relative overflow-hidden flex flex-col z-10"
         id="app-container">
 
+        <!-- ══════════════════════════════════════════════
+             알츠윈 뇌건강 테스트 전용 헤더 (step-alzwin 전용)
+             ══════════════════════════════════════════════ -->
+        <header id="alzwin-header"
+            style="padding:14px 16px 12px;background:linear-gradient(135deg,#1e3a8a,#3730a3);color:#fff;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;z-index:10;position:relative;">
+            <div>
+                <div style="font-size:0.68rem;font-weight:700;color:#93c5fd;letter-spacing:0.5px;margin-bottom:2px;">STEP 0 · 뇌건강 테스트</div>
+                <div style="font-size:1rem;font-weight:900;letter-spacing:-0.3px;">🧠 간편 뇌건강 테스트</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <a href="https://alzwin.com/test_guestroom?id=69c0bccbf117d045cc93e6dc&lang=ko" target="_blank" rel="noopener"
+                    style="font-size:0.72rem;font-weight:700;color:#93c5fd;text-decoration:none;padding:5px 10px;background:rgba(255,255,255,0.12);border-radius:8px;white-space:nowrap;border:1px solid rgba(255,255,255,0.2);">↗ 새 탭</a>
+            </div>
+        </header>
+
+        <!-- ══════════════════════════════════════════════
+             기존 헤더 (step-1 이후 전용)
+             ══════════════════════════════════════════════ -->
         <header class="pt-12 pb-4 px-6 bg-gradient-to-r from-blue-700 to-indigo-800 text-white shadow-md z-10"
-            id="main-header">
+            id="main-header" style="display:none;">
             <h1 class="text-xl font-bold tracking-tight">건강 수명 계산기</h1>
             <p class="text-xs text-blue-200 mt-1">나의 뇌 건강과 건강수명 예측 분석</p>
         </header>
 
-        <main class="flex-1 overflow-y-auto hide-scrollbar p-6 pb-24" id="main-content">
+        <main class="flex-1 hide-scrollbar" id="main-content" style="padding:0;display:flex;flex-direction:column;overflow:hidden;">
+
+            <!-- ═══════════════════════════════════════════════════
+                 STEP 0: 알츠윈 뇌건강 테스트 (첫 번째 페이지)
+                 ═══════════════════════════════════════════════════ -->
+            <section id="step-alzwin" class="step-section" style="display:flex;flex-direction:column;height:100%;">
+                <!-- iframe 전체 영역 -->
+                <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+                    <iframe id="alzwin-iframe"
+                        src="https://alzwin.com/test_guestroom?id=69c0bccbf117d045cc93e6dc&lang=ko"
+                        style="flex:1;width:100%;border:none;display:block;background:#f8fafc;min-height:0;"
+                        allow="clipboard-write"
+                        title="알츠윈 간편 뇌건강 테스트">
+                    </iframe>
+                </div>
+                <!-- 하단: 다음 버튼 -->
+                <div style="flex-shrink:0;padding:14px 16px;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -4px 16px rgba(0,0,0,0.08);">
+                    <button id="btn-alzwin-next" onclick="openCognitiveModalFromAlzwin()"
+                        style="width:100%;padding:15px;border:none;border-radius:14px;font-size:0.95rem;font-weight:800;color:#fff;background:linear-gradient(135deg,#1d4ed8,#4338ca);cursor:pointer;transition:all 0.3s;letter-spacing:-0.3px;box-shadow:0 4px 14px rgba(37,99,235,0.35);">
+                        🧠 내 인지나이 기록 후 기본 정보 입력하기
+                    </button>
+                </div>
+            </section>
+
+            <!-- ═══════════════════════════════════════════════════
+                 STEP 1 이후: 기존 콘텐츠 (p-6 패딩 복원)
+                 ═══════════════════════════════════════════════════ -->
+            <div id="steps-wrapper" style="display:none;padding:24px 24px 0;">
+
             <!-- ===== 상단 진행 바 (Progress Bar) ===== -->
             <div style="padding:12px 0 4px;margin-bottom:4px;">
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
@@ -802,36 +882,12 @@
 
             <section id="step-1" class="step-section">
                 <h2 class="text-2xl font-bold mb-1">STEP 1 · 기본 정보</h2>
-                <p class="text-sm text-gray-500 mb-5">아래 두 단계를 순서대로 완료해 주세요.</p>
-
-                <!-- ══ 알츠윈 간편 뇌건강 테스트 카드 ══ -->
-                <div id="alzwin-card" style="background:linear-gradient(135deg,#eff6ff,#dbeafe);border:2px solid #3b82f6;border-radius:18px;padding:18px;margin-bottom:14px;transition:all 0.3s;">
-                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
-                        <div style="width:28px;height:28px;background:#2563eb;color:#fff;border-radius:50%;font-size:0.85rem;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
-                        <div>
-                            <div style="font-size:0.95rem;font-weight:900;color:#1e3a8a;">간편 뇌건강 테스트 완료하기</div>
-                            <div style="font-size:0.7rem;color:#3b82f6;margin-top:1px;">이름 · 연락처 · 이메일 · 학력을 등록합니다</div>
-                        </div>
-                        <div id="alzwin-done-badge" style="display:none;margin-left:auto;background:#16a34a;color:#fff;font-size:0.68rem;font-weight:800;padding:3px 10px;border-radius:999px;">✓ 완료</div>
-                    </div>
-                    <a href="https://alzwin.com/test_guestroom?id=69c0bccbf117d045cc93e6dc&lang=ko" target="_blank" rel="noopener"
-                        onclick="markAlzwinOpened()"
-                        style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;margin-top:12px;background:linear-gradient(135deg,#1d4ed8,#4338ca);color:#fff;border-radius:12px;font-size:0.9rem;font-weight:800;text-decoration:none;box-shadow:0 4px 14px rgba(37,99,235,0.35);box-sizing:border-box;">
-                        📋 간편 뇌건강 테스트 바로가기 (새 탭에서 열림)
-                    </a>
-                    <!-- 간편 뇌건강 테스트 완료 확인 체크박스 -->
-                    <div style="display:flex;align-items:center;gap:8px;margin-top:10px;padding:10px 12px;background:#fff;border-radius:10px;border:1px solid #bfdbfe;cursor:pointer;" onclick="toggleAlzwinDone(this)">
-                        <div id="alzwin-check-icon" style="width:20px;height:20px;border-radius:6px;border:2px solid #93c5fd;background:#f0f9ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;">
-                            <span style="font-size:12px;color:#93c5fd;">✓</span>
-                        </div>
-                        <span style="font-size:0.8rem;font-weight:700;color:#1e40af;">간편 뇌건강 테스트를 완료했습니다</span>
-                    </div>
-                </div>
+                <p class="text-sm text-gray-500 mb-5">아래 정보를 순서대로 완료해 주세요.</p>
 
                 <!-- ══ UID 입력 카드 ══ -->
-                <div id="uid-card" style="background:#f8fafc;border:2px solid #e2e8f0;border-radius:18px;padding:18px;margin-bottom:14px;opacity:0.5;pointer-events:none;transition:all 0.3s;">
+                <div id="uid-card" style="background:#f8fafc;border:2px solid #e2e8f0;border-radius:18px;padding:18px;margin-bottom:14px;transition:all 0.3s;">
                     <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-                        <div style="width:28px;height:28px;background:#94a3b8;color:#fff;border-radius:50%;font-size:0.85rem;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;" id="uid-step-num">2</div>
+                        <div style="width:28px;height:28px;background:#2563eb;color:#fff;border-radius:50%;font-size:0.85rem;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;" id="uid-step-num">1</div>
                         <div>
                             <div style="font-size:0.95rem;font-weight:900;color:#334155;">고유 ID 생성</div>
                             <div style="font-size:0.7rem;color:#64748b;margin-top:1px;">간편 뇌건강 테스트와 건강 데이터를 연결하는 식별 정보입니다</div>
@@ -855,7 +911,7 @@
                 <!-- ══ 신체 정보 카드 ══ -->
                 <div id="body-card" style="background:#f8fafc;border:2px solid #e2e8f0;border-radius:18px;padding:18px;margin-bottom:14px;opacity:0.5;pointer-events:none;transition:all 0.3s;">
                     <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-                        <div style="width:28px;height:28px;background:#94a3b8;color:#fff;border-radius:50%;font-size:0.85rem;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;" id="body-step-num">3</div>
+                        <div style="width:28px;height:28px;background:#94a3b8;color:#fff;border-radius:50%;font-size:0.85rem;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;" id="body-step-num">2</div>
                         <div>
                             <div style="font-size:0.95rem;font-weight:900;color:#334155;">신체 및 생활 정보</div>
                             <div style="font-size:0.7rem;color:#64748b;margin-top:1px;">건강수명 계산에 사용됩니다</div>
@@ -1065,6 +1121,76 @@
                 </button>
             </section>
 
+            <!-- ═══════════════════════════════════════════════════
+                 STEP 4: 인지 기능 자가 체크
+                 ═══════════════════════════════════════════════════ -->
+            <section id="step-4" class="step-section hidden">
+                <!-- 상단 심리적 자각 배너 -->
+                <div style="background:linear-gradient(135deg,#fef2f2,#fff1f2);border:1.5px solid #fecaca;border-radius:16px;padding:18px 18px 14px;margin-bottom:20px;text-align:center;">
+                    <div style="font-size:2rem;margin-bottom:6px;">🧠</div>
+                    <h2 style="font-size:1.1rem;font-weight:900;color:#991b1b;margin-bottom:6px;letter-spacing:-0.3px;">결과 확인 전, 마지막 체크</h2>
+                    <p style="font-size:0.78rem;color:#b91c1c;line-height:1.7;">최근 내 뇌와 인지 기능에 대해<br>솔직하게 답해보세요.</p>
+                </div>
+
+                <!-- 질문 카드 1 -->
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 mb-4">
+                    <p class="text-sm font-bold text-gray-800 mb-3 leading-relaxed">
+                        1. 최근 중요한 약속이나 물건 둔 곳을 깜빡해서 당황한 적이 <span style="color:#dc2626;font-weight:900;">자주</span> 있나요?
+                    </p>
+                    <div class="flex gap-3">
+                        <button class="chip inactive flex-1 py-2.5 bg-white rounded-lg border text-sm font-semibold"
+                            onclick="selectSelfCheck(this, 'self_forget', 'yes')">예</button>
+                        <button class="chip inactive flex-1 py-2.5 bg-white rounded-lg border text-sm font-semibold"
+                            onclick="selectSelfCheck(this, 'self_forget', 'no')">아니오</button>
+                    </div>
+                </div>
+
+                <!-- 질문 카드 2 -->
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 mb-4">
+                    <p class="text-sm font-bold text-gray-800 mb-3 leading-relaxed">
+                        2. 대화 중 단어가 빨리 떠오르지 않아 <span style="color:#dc2626;font-weight:900;">'그것, 저것'</span>으로 얼버무리는 일이 잦나요?
+                    </p>
+                    <div class="flex gap-3">
+                        <button class="chip inactive flex-1 py-2.5 bg-white rounded-lg border text-sm font-semibold"
+                            onclick="selectSelfCheck(this, 'self_word', 'yes')">예</button>
+                        <button class="chip inactive flex-1 py-2.5 bg-white rounded-lg border text-sm font-semibold"
+                            onclick="selectSelfCheck(this, 'self_word', 'no')">아니오</button>
+                    </div>
+                </div>
+
+                <!-- 질문 카드 3 -->
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 mb-4">
+                    <p class="text-sm font-bold text-gray-800 mb-3 leading-relaxed">
+                        3. 늘 다니던 익숙한 길에서 순간적으로 <span style="color:#dc2626;font-weight:900;">방향을 잃거나 헷갈린</span> 적이 있나요?
+                    </p>
+                    <div class="flex gap-3">
+                        <button class="chip inactive flex-1 py-2.5 bg-white rounded-lg border text-sm font-semibold"
+                            onclick="selectSelfCheck(this, 'self_direction', 'yes')">예</button>
+                        <button class="chip inactive flex-1 py-2.5 bg-white rounded-lg border text-sm font-semibold"
+                            onclick="selectSelfCheck(this, 'self_direction', 'no')">아니오</button>
+                    </div>
+                </div>
+
+                <!-- 질문 카드 4 -->
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 mb-4">
+                    <p class="text-sm font-bold text-gray-800 mb-3 leading-relaxed">
+                        4. 최근 머릿속에 <span style="color:#dc2626;font-weight:900;">안개가 낀 것처럼 멍하고</span> 하나에 집중하기가 어렵나요?
+                    </p>
+                    <div class="flex gap-3">
+                        <button class="chip inactive flex-1 py-2.5 bg-white rounded-lg border text-sm font-semibold"
+                            onclick="selectSelfCheck(this, 'self_fog', 'yes')">예</button>
+                        <button class="chip inactive flex-1 py-2.5 bg-white rounded-lg border text-sm font-semibold"
+                            onclick="selectSelfCheck(this, 'self_fog', 'no')">아니오</button>
+                    </div>
+                </div>
+
+                <!-- 이전 단계 버튼 -->
+                <button onclick="prevStep()"
+                    style="display:block;width:100%;padding:10px;margin-top:8px;margin-bottom:16px;border:1px solid #d1d5db;border-radius:10px;background:#f8fafc;color:#64748b;font-size:0.85rem;font-weight:600;cursor:pointer;">
+                    ← 이전 단계
+                </button>
+            </section>
+
             <section id="step-result" class="step-section hidden pb-10 relative">
                 <div id="web-result-view">
                     <div class="text-center mb-6">
@@ -1082,7 +1208,7 @@
                             <div class="w-1/2 flex flex-col h-full text-center">
                                 <div class="mb-1">
                                     <span class="text-[10px] font-bold text-gray-500">나의 예측 기대수명</span><br>
-                                    <span class="text-3xl font-extrabold text-gray-800"
+                                    <span class="text-3xl font-extrabold" style="color:#1e293b;font-weight:900;"
                                         id="res-phys-age-web"></span><span
                                         class="text-sm font-bold text-gray-600">세</span>
                                 </div>
@@ -1101,8 +1227,8 @@
                             </div>
                             <div class="w-1/2 flex flex-col h-full text-center">
                                 <div class="mb-1">
-                                    <span class="text-[10px] font-bold text-green-700">나의 예측 건강수명</span><br>
-                                    <span class="text-3xl font-extrabold text-gray-800"
+                                    <span class="text-[10px] font-bold text-orange-700">나의 예측 건강수명</span><br>
+                                    <span class="text-3xl crisis-num-orange"
                                         id="res-health-age-web"></span><span
                                         class="text-sm font-bold text-gray-600">세</span>
                                 </div>
@@ -1124,7 +1250,18 @@
                             </div>
                         </div>
                         <div class="mt-2 pt-4 border-t border-gray-100 text-center">
-                            
+                            <div id="care-risk-box-web" style="display:none;margin-bottom:8px;">
+                                <div style="background:linear-gradient(135deg,#fff1f2,#fee2e2);border:2px solid #fca5a5;border-radius:14px;padding:14px 18px;margin-bottom:8px;text-align:center;">
+                                    <div style="font-size:0.78rem;font-weight:800;color:#991b1b;margin-bottom:4px;">⚠️ 요양 위험 기간</div>
+                                    <div id="care-risk-years-web" style="font-size:2.2rem;font-weight:900;color:#dc2626;letter-spacing:-2px;line-height:1.1;">—년</div>
+                                    <div style="font-size:0.72rem;color:#b91c1c;margin-top:2px;">(예측 기대수명 − 예측 건강수명)</div>
+                                </div>
+                                <div style="background:linear-gradient(135deg,#fef2f2,#fef9c3);border:2.5px solid #ef4444;border-radius:14px;padding:16px 18px;text-align:center;box-shadow:0 4px 20px rgba(220,38,38,0.15);">
+                                    <div style="font-size:0.78rem;font-weight:800;color:#991b1b;margin-bottom:6px;">💰 최소 간병 필요 자금</div>
+                                    <div id="care-cost-web" style="font-size:1.5rem;font-weight:900;color:#dc2626;letter-spacing:-1px;line-height:1.2;">—</div>
+                                    <div style="font-size:0.68rem;color:#b91c1c;margin-top:6px;line-height:1.6;">요양 위험기간 × 12개월 × 200만원 기준</div>
+                                </div>
+                            </div>
                         </div>
 
 
@@ -1159,9 +1296,16 @@
 
 
 
-                        <div id="action-buttons" class="space-y-3 mb-6 mt-8">
+                        <!-- 인지 자가 체크 결과 -->
+                        <div id="self-check-result-web" class="bg-red-50 p-5 rounded-xl border border-red-200 shadow-sm mb-6">
+                            <h3 class="font-bold text-red-800 mb-3 flex items-center gap-2"><span class="text-xl">🧠</span> 인지 기능 자가 체크 결과</h3>
+                            <div id="self-check-score-display" class="text-center mb-3"></div>
+                            <div id="self-check-items" class="space-y-2"></div>
+                        </div>
 
-                            <!-- ★ 상세 상담 신청 버튼 (최상단 강조) -->
+                        <div id="action-buttons" class="space-y-3 mb-6 mt-8" style="display:none;">
+
+                            <!-- ★ 상세 상담 신청 버튼 (플로팅 버튼으로 대체됨 — 숨김 유지) -->
                             <button onclick="openConsultModal()"
                                 style="width:100%;padding:18px 14px;background:linear-gradient(135deg,#1d4ed8,#4338ca);color:#fff;border:none;border-radius:16px;font-size:1rem;font-weight:900;cursor:pointer;box-shadow:0 6px 20px rgba(37,99,235,0.45);display:flex;align-items:center;justify-content:center;gap:10px;letter-spacing:-0.3px;position:relative;overflow:hidden;">
                                 <span style="font-size:1.2rem;">📋</span>
@@ -1171,6 +1315,9 @@
 
 
                         </div>
+
+                        <!-- 플로팅 버튼 공간 확보용 패딩 -->
+                        <div style="height:80px;"></div>
 
                         <!-- ✅ 웹 결과 하단 면책 조항 (전문적인 느낌) -->
                         <div class="mt-8 bg-gray-50 border border-gray-200 rounded-xl p-4 shadow-sm text-left">
@@ -1185,33 +1332,41 @@
                             </ul>
                         </div>
 
-                    </div>
+                    </div><!-- // bg-white outer div -->
+                    </div><!-- // web-result-view -->
             </section>
+
+            </div><!-- // steps-wrapper -->
         </main>
 
         <footer id="bottom-bar"
-            class="absolute bottom-0 left-0 right-0 p-4 bg-white border-t flex justify-between items-center z-20 shadow-lg">
-            <span class="text-sm font-bold text-gray-400" id="step-indicator">Step 1 / 3</span>
+            class="absolute bottom-0 left-0 right-0 p-4 bg-white border-t flex justify-between items-center z-20 shadow-lg" style="display:none;">
+            <span class="text-sm font-bold text-gray-400" id="step-indicator">Step 1 / 4</span>
             <button id="btn-next" onclick="nextStep()"
                 class="bg-gray-800 text-white px-6 py-2.5 rounded-lg font-semibold shadow opacity-50 cursor-not-allowed transition-all"
                 disabled>다음 단계</button>
         </footer>
     </div>
 
+    <!-- 인지나이 입력 팝업 (알츠윈 테스트 직후) -->
     <div id="cognitive-modal"
         class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-5 backdrop-blur-sm">
         <div class="bg-white rounded-3xl p-6 w-full max-w-sm text-center shadow-2xl">
             <div class="text-4xl mb-3">🧠</div>
             <h3 class="text-lg font-extrabold text-blue-900 mb-2">나의 인지 나이 입력</h3>
             <p class="text-xs text-gray-600 mb-6">알츠윈 검사에서 측정된 <span class="text-blue-600 font-bold">인지 나이 결과</span>를 입력해주세요.<br><span class="text-gray-400" style="font-size:0.68rem;">검사를 받지 않으셨다면 건너뛰기를 눌러주세요.</span></p>
-            <div class="flex items-center justify-center gap-3 mb-6"><input type="number" id="manual_cognitive_age"
+            <div class="flex items-center justify-center gap-3 mb-6">
+                <input type="number" id="manual_cognitive_age"
                     class="w-24 px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl text-center font-extrabold text-2xl text-blue-600 focus:outline-none focus:border-blue-500"
-                    placeholder="65"><span class="text-gray-500 font-bold text-lg">세</span></div>
-            <div class="flex gap-2"><button onclick="closeCognitiveModal()"
-                    class="flex-1 bg-gray-100 text-gray-600 font-bold py-3.5 rounded-xl hover:bg-gray-200 transition text-sm">건너뛰기</button><button
-                    onclick="submitCognitiveAge()"
-                    class="flex-1 bg-blue-600 text-white font-bold py-3.5 rounded-xl shadow hover:bg-blue-700 transition text-sm">결과
-                    확인</button></div>
+                    placeholder="65">
+                <span class="text-gray-500 font-bold text-lg">세</span>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="skipCognitiveAndProceed()"
+                    class="flex-1 bg-gray-100 text-gray-600 font-bold py-3.5 rounded-xl hover:bg-gray-200 transition text-sm">건너뛰기</button>
+                <button onclick="submitCognitiveAndProceed()"
+                    class="flex-1 bg-blue-600 text-white font-bold py-3.5 rounded-xl shadow hover:bg-blue-700 transition text-sm">기록하기</button>
+            </div>
         </div>
     </div>
 
@@ -1266,10 +1421,10 @@
                         </div>
                         <div
                             style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:14px;text-align:center;">
-                            <div style="font-size:0.72rem;font-weight:700;color:#16a34a;margin-bottom:6px;">나의 예측 건강수명
+                            <div style="font-size:0.72rem;font-weight:700;color:#ea580c;margin-bottom:6px;">나의 예측 건강수명
                             </div>
                             <div><span id="rp-health-age"
-                                    style="font-size:2.2rem;font-weight:900;color:#1e293b;">—</span><span
+                                    style="font-size:2.2rem;font-weight:900;color:#ea580c;letter-spacing:-1.5px;">—</span><span
                                     style="font-size:0.85rem;font-weight:700;color:#64748b;">세</span></div>
                             <div
                                 style="margin-top:8px;font-size:0.65rem;color:#94a3b8;background:#fff;border:1px solid #bbf7d0;border-radius:8px;padding:6px;text-align:left;line-height:1.5;">
@@ -1279,9 +1434,9 @@
                         </div>
                     </div>
                     <div
-                        style="text-align:center;padding:10px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;">
-                        <p style="font-size:0.85rem;color:#166534;">건강수명과 기대수명 격차: <span id="rp-gap-text"
-                                style="font-weight:900;color:#16a34a;font-size:1rem;">—</span></p>
+                        style="text-align:center;padding:10px;background:#fff1f2;border:1.5px solid #fecaca;border-radius:10px;">
+                        <p style="font-size:0.85rem;color:#991b1b;font-weight:700;">건강수명과 기대수명 격차: <span id="rp-gap-text"
+                                style="font-weight:900;color:#dc2626;font-size:1.1rem;letter-spacing:-1px;">—</span></p>
                     </div>
                 </div>
 
@@ -1297,15 +1452,16 @@
                         </div>
                         <div style="display:flex;flex-direction:column;gap:10px;">
                             <!-- 건강 나이 카드 -->
-                            <div style="background:linear-gradient(135deg,#f5f3ff,#ede9fe);border:2px solid #c4b5fd;border-radius:12px;padding:14px;text-align:center;">
-                                <div style="font-size:0.72rem;font-weight:700;color:#6d28d9;margin-bottom:4px;">🎂 나의 건강 나이</div>
-                                <div id="rp-bio-age" style="font-size:2.4rem;font-weight:900;color:#7c3aed;letter-spacing:-2px;">—세</div>
-                                <div style="font-size:0.65rem;color:#8b5cf6;margin-top:4px;" id="rp-bio-age-diff"></div>
+                            <div style="background:linear-gradient(135deg,#fff1f2,#fee2e2);border:2px solid #fca5a5;border-radius:12px;padding:14px;text-align:center;">
+                                <div style="font-size:0.72rem;font-weight:700;color:#991b1b;margin-bottom:4px;">🎂 나의 건강 나이</div>
+                                <div id="rp-bio-age" style="font-size:2.4rem;font-weight:900;color:#dc2626;letter-spacing:-2px;">—세</div>
+                                <div style="font-size:0.65rem;color:#b91c1c;margin-top:4px;" id="rp-bio-age-diff"></div>
                             </div>
-                            <!-- 동년배 비교 카드 -->
-                            <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:12px;padding:14px;font-size:0.82rem;flex:1;">
-                                <div style="font-weight:800;color:#0c4a6e;border-bottom:2px dashed #7dd3fc;padding-bottom:8px;margin-bottom:10px;text-align:center;">👥 동년배 대비 나의 위치</div>
-                                <div id="rp-peer-summary"></div>
+                            <!-- 맞춤형 요양 자금 카드 (반응형 프리뷰) -->
+                            <div style="background:linear-gradient(135deg,#fef2f2,#fef9c3);border:2px solid #ef4444;border-radius:12px;padding:14px;flex:1;text-align:center;">
+                                <div style="font-weight:800;color:#991b1b;border-bottom:1.5px dashed #fca5a5;padding-bottom:8px;margin-bottom:10px;font-size:0.78rem;">💰 최소 간병 필요 자금</div>
+                                <div id="rp-care-cost" style="font-size:0.85rem;font-weight:900;color:#dc2626;line-height:1.6;"></div>
+                                <div style="font-size:0.62rem;color:#b91c1c;margin-top:6px;">요양 위험기간 × 12개월 × 200만원</div>
                             </div>
                         </div>
                     </div>
@@ -1378,15 +1534,16 @@
                                 </div>
                                 <div style="display:flex;flex-direction:column;gap:8px;">
                                     <!-- 건강 나이 카드 -->
-                                    <div style="background:linear-gradient(135deg,#f5f3ff,#ede9fe);border:2px solid #c4b5fd;border-radius:16px;padding:10px;text-align:center;">
-                                        <div style="font-size:0.7rem;font-weight:700;color:#6d28d9;margin-bottom:2px;">🎂 나의 건강 나이</div>
-                                        <div style="font-size:2.2rem;font-weight:900;color:#7c3aed;letter-spacing:-2px;line-height:1.2;" id="pdf-bio-age">—세</div>
-                                        <div style="font-size:0.65rem;color:#8b5cf6;margin-top:2px;" id="pdf-bio-age-diff"></div>
+                                    <div style="background:linear-gradient(135deg,#fff1f2,#fee2e2);border:2px solid #fca5a5;border-radius:16px;padding:10px;text-align:center;">
+                                        <div style="font-size:0.7rem;font-weight:700;color:#991b1b;margin-bottom:2px;">🎂 나의 건강 나이</div>
+                                        <div style="font-size:2.2rem;font-weight:900;color:#dc2626;letter-spacing:-2px;line-height:1.2;" id="pdf-bio-age">—세</div>
+                                        <div style="font-size:0.65rem;color:#b91c1c;margin-top:2px;" id="pdf-bio-age-diff"></div>
                                     </div>
-                                    <!-- 동년배 비교 카드 -->
-                                    <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:12px;padding:10px;font-size:0.72rem;flex:1;">
-                                        <div style="font-weight:800;color:#0c4a6e;border-bottom:1px dashed #7dd3fc;padding-bottom:6px;margin-bottom:8px;text-align:center;">👥 동년배 대비 나의 위치</div>
-                                        <div id="pdf-peer-summary"></div>
+                                    <!-- 맞춤형 요양 자금 카드 (PDF) -->
+                                    <div style="background:linear-gradient(135deg,#fef2f2,#fef9c3);border:2px solid #ef4444;border-radius:12px;padding:10px;flex:1;text-align:center;">
+                                        <div style="font-weight:800;color:#991b1b;padding-bottom:6px;margin-bottom:6px;border-bottom:1.5px dashed #fca5a5;text-align:center;font-size:0.68rem;">💰 최소 간병 필요 자금</div>
+                                        <div id="pdf-care-cost" style="font-size:0.75rem;font-weight:900;color:#dc2626;line-height:1.5;"></div>
+                                        <div style="font-size:0.58rem;color:#b91c1c;margin-top:4px;line-height:1.5;">요양 위험기간 × 12개월 × 200만원</div>
                                     </div>
                                 </div>
                             </div>
@@ -1630,7 +1787,7 @@
         // ================================================================
         const AppState = {
             currentStep: 1,
-            totalSteps: 3,
+            totalSteps: 4,
             currentGap: 0,
             currentInsurance: 0,
             charts: { radar: null, waterfall: null, lifespanCompare: null, score5Bars: null },
@@ -1642,7 +1799,9 @@
                 frail_walk: null, frail_grip: null, frail_hear: null, frail_vision: null,
                 med_htn: false, med_dm: false, med_hld: false, med_dep: false, med_poly: null,
                 fam_dementia: false, fam_stroke: false, fam_cancer: false, fam_other: false, fam_none: false,
-                cognitive_age: null
+                cognitive_age: null,
+                // 인지 자가 체크 (STEP 4)
+                self_forget: null, self_word: null, self_direction: null, self_fog: null
             }
         };
 
@@ -1708,41 +1867,66 @@
             updateDob(`${parseInt(year)}-07-01`);
         }
 
-        // ── 알츠윈 간편 뇌건강 테스트 완료 토글 ──────────────────────────────
+        // ── 알츠윈 뇌건강 테스트 (Step 0) ──────────────────────────────
         let alzwinDoneState = false;
-        function markAlzwinOpened() {
-            // 링크 클릭 시 2초 후 '완료 확인' UI 활성화 힌트
-            setTimeout(() => {
-                const card = document.getElementById('alzwin-card');
-                if (card) card.style.boxShadow = '0 0 0 3px #bfdbfe';
-            }, 2000);
-        }
+
         function toggleAlzwinDone(row) {
             alzwinDoneState = !alzwinDoneState;
             const icon = document.getElementById('alzwin-check-icon');
             const badge = document.getElementById('alzwin-done-badge');
+            const nextBtn = document.getElementById('btn-alzwin-next');
+
             if (alzwinDoneState) {
                 icon.style.background = '#2563eb'; icon.style.borderColor = '#2563eb';
                 icon.querySelector('span').style.color = '#fff';
                 badge.style.display = 'flex';
-                // UID 카드 활성화
-                const uidCard = document.getElementById('uid-card');
-                uidCard.style.opacity = '1'; uidCard.style.pointerEvents = 'auto';
-                document.getElementById('uid-step-num').style.background = '#2563eb';
+                if (row && row.style) {
+                    row.style.background = '#dbeafe';
+                    row.style.borderColor = '#2563eb';
+                }
+                if (nextBtn) {
+                    nextBtn.disabled = false;
+                    nextBtn.style.background = 'linear-gradient(135deg,#1d4ed8,#4338ca)';
+                    nextBtn.style.cursor = 'pointer';
+                    nextBtn.style.boxShadow = '0 4px 14px rgba(37,99,235,0.35)';
+                }
             } else {
-                icon.style.background = '#f0f9ff'; icon.style.borderColor = '#93c5fd';
+                icon.style.background = '#fff'; icon.style.borderColor = '#93c5fd';
                 icon.querySelector('span').style.color = '#93c5fd';
                 badge.style.display = 'none';
-                const uidCard = document.getElementById('uid-card');
-                uidCard.style.opacity = '0.5'; uidCard.style.pointerEvents = 'none';
-                document.getElementById('uid-step-num').style.background = '#94a3b8';
-                // body 카드도 비활성화
-                const bodyCard = document.getElementById('body-card');
-                bodyCard.style.opacity = '0.5'; bodyCard.style.pointerEvents = 'none';
-                document.getElementById('body-step-num').style.background = '#94a3b8';
+                if (row && row.style) {
+                    row.style.background = '#f0f9ff';
+                    row.style.borderColor = '#bfdbfe';
+                }
+                if (nextBtn) {
+                    nextBtn.disabled = true;
+                    nextBtn.style.background = '#c7d2fe';
+                    nextBtn.style.cursor = 'not-allowed';
+                    nextBtn.style.boxShadow = 'none';
+                }
             }
+        }
+
+        function proceedFromAlzwin() {
+            if (!alzwinDoneState) return;
+            // step-alzwin 숨기고 step-1로 전환
+            document.getElementById('step-alzwin').style.display = 'none';
+            document.getElementById('alzwin-header').style.display = 'none';
+            document.getElementById('main-header').style.display = '';
+            // main-content를 스크롤 가능하게 전환
+            const mc = document.getElementById('main-content');
+            mc.style.overflowY = 'auto';
+            mc.style.overflowX = 'hidden';
+            mc.style.display = 'block';
+            mc.style.paddingBottom = '96px';
+            document.getElementById('steps-wrapper').style.display = 'block';
+            document.getElementById('bottom-bar').style.display = 'flex';
+            window.scrollTo(0, 0);
             checkStepCompletion();
         }
+
+        function markAlzwinOpened() { /* 레거시 호환용 */ }
+        function toggleAlzwinEmbed() { /* 레거시 호환용 */ }
 
         // ── 이름/전화 → UID 생성 ──────────────────────────────
         function updateName(value) {
@@ -1834,16 +2018,23 @@
             data.fam_dementia = data.fam_stroke = data.fam_cancer = data.fam_other = false; checkStepCompletion();
         }
 
+        // ── STEP 4: 인지 기능 자가 체크 ──────────────────────────────
+        function selectSelfCheck(btn, category, value) {
+            const siblings = btn.parentElement.querySelectorAll('button');
+            siblings.forEach(s => { s.classList.remove('active', 'bg-blue-600'); s.classList.add('inactive', 'bg-white'); });
+            btn.classList.add('active', 'bg-blue-600');
+            data[category] = value;
+            checkStepCompletion();
+        }
+
         function checkStepCompletion() {
             const btnNext = document.getElementById('btn-next'); let isComplete = false;
             if (currentStep === 1) {
-                // [BUG FIX] DOM 스타일 색상 비교 대신 alzwinDoneState 변수 직접 참조
-                const alzwinDone = alzwinDoneState;
                 const uidOk = data.name.trim().length >= 1 && data.phone4.length === 4;
                 let basicInfo = data.gender && data.age !== null && data.height && data.weight && data.smoke;
                 if (data.smoke === 'yes') basicInfo = basicInfo && data.smokeAmount > 0;
                 let drinkOk = data.drinkFreq !== null; if (data.drinkFreq > 0) drinkOk = drinkOk && data.drinkType && data.drinkCups > 0;
-                isComplete = alzwinDone && uidOk && basicInfo && drinkOk;
+                isComplete = uidOk && basicInfo && drinkOk;
             } else if (currentStep === 2) {
                 let exerciseOk = data.exerciseFreq === 0 || (data.exerciseFreq > 0 && data.exerciseDuration !== null);
                 isComplete = exerciseOk && data.sleepHours && data.frail_sleep && data.frail_walk && data.frail_grip && data.frail_hear && data.frail_vision;
@@ -1851,11 +2042,16 @@
                 let famOk = (data.fam_none || data.fam_dementia || data.fam_stroke || data.fam_cancer || data.fam_other);
                 // med_poly: 'yes' or 'no' both truthy, null is falsy — explicit check
                 isComplete = (data.med_poly === 'yes' || data.med_poly === 'no') && famOk;
+            } else if (currentStep === 4) {
+                isComplete = (data.self_forget === 'yes' || data.self_forget === 'no') &&
+                             (data.self_word === 'yes' || data.self_word === 'no') &&
+                             (data.self_direction === 'yes' || data.self_direction === 'no') &&
+                             (data.self_fog === 'yes' || data.self_fog === 'no');
             }
             btnNext.disabled = !isComplete;
             btnNext.classList.toggle('opacity-50', !isComplete);
             btnNext.classList.toggle('cursor-not-allowed', !isComplete);
-            btnNext.innerText = currentStep === 3 ? "📊 결과 분석 시작" : "다음 단계";
+            btnNext.innerText = currentStep === 4 ? "📊 결과 보러가기" : "다음 단계";
             const lbl = document.getElementById('progress-label');
             if (lbl) lbl.innerText = `${currentStep} / ${totalSteps}단계`;
         }
@@ -1898,7 +2094,7 @@
                 updateProgressBar();
                 checkStepCompletion();
             } else {
-                document.getElementById('cognitive-modal').classList.remove('hidden');
+                proceedToResults();
             }
         }
 
@@ -1935,12 +2131,34 @@
             checkStepCompletion();
         }
 
-        function closeCognitiveModal() { document.getElementById('cognitive-modal').classList.add('hidden'); proceedToResults(); }
-
-        function submitCognitiveAge() {
-            const val = document.getElementById('manual_cognitive_age').value;
-            if (val && !isNaN(val)) { data.cognitive_age = parseInt(val); document.getElementById('cognitive-modal').classList.add('hidden'); proceedToResults(); } else { alert("인지 나이를 숫자로 정확히 입력해주세요!"); }
+        // ── 인지나이 팝업: 알츠윈 직후 호출 ──────────────────────────────
+        function openCognitiveModalFromAlzwin() {
+            document.getElementById('manual_cognitive_age').value = '';
+            document.getElementById('cognitive-modal').classList.remove('hidden');
         }
+
+        function skipCognitiveAndProceed() {
+            data.cognitive_age = null;
+            document.getElementById('cognitive-modal').classList.add('hidden');
+            alzwinDoneState = true;   // [FIX] proceedFromAlzwin guard 해제
+            proceedFromAlzwin();
+        }
+
+        function submitCognitiveAndProceed() {
+            const val = document.getElementById('manual_cognitive_age').value;
+            if (val && !isNaN(val) && parseInt(val) > 0) {
+                data.cognitive_age = parseInt(val);
+            } else {
+                data.cognitive_age = null;
+            }
+            document.getElementById('cognitive-modal').classList.add('hidden');
+            alzwinDoneState = true;   // [FIX] proceedFromAlzwin guard 해제
+            proceedFromAlzwin();
+        }
+
+        // 레거시 호환용 (기존 nextStep에서 호출되던 것 — 이제 step 3 완료 시 바로 결과로)
+        function closeCognitiveModal() { proceedToResults(); }
+        function submitCognitiveAge() { proceedToResults(); }
 
         async function submitDataToGoogleSheet() {
             // UID 최종 생성 보장
@@ -2042,7 +2260,7 @@
                 sessionStorage.setItem('selly_last_uid', data.uid);
             } catch(e) { console.warn('sessionStorage 저장 실패:', e); }
 
-            document.getElementById('step-3').classList.add('hidden');
+            document.getElementById('step-4').classList.add('hidden');
             document.getElementById('bottom-bar').classList.add('hidden');
             document.getElementById('step-result').classList.remove('hidden');
 
@@ -2056,7 +2274,43 @@
             document.querySelectorAll('.pdf-name-other').forEach(el => el.innerText = data.name);
 
             // [FIX] calculateResults() 완료 후 전송 → physLife/healthLife/gap 값이 정확히 반영됨
-            setTimeout(() => { calculateResults(); submitDataToGoogleSheet(); window.scrollTo(0, 0); }, 50);
+            setTimeout(() => { calculateResults(); renderSelfCheckResult(); submitDataToGoogleSheet(); window.scrollTo(0, 0); }, 50);
+        }
+
+        function renderSelfCheckResult() {
+            const questions = [
+                { key: 'self_forget',    label: '중요한 약속·물건 위치 깜빡' },
+                { key: 'self_word',      label: '대화 중 단어 떠오르지 않음' },
+                { key: 'self_direction', label: '익숙한 길에서 방향 혼란' },
+                { key: 'self_fog',       label: '머릿속 안개·집중 어려움' }
+            ];
+            const yesCount = questions.filter(q => data[q.key] === 'yes').length;
+
+            // 점수 배지
+            const scoreEl = document.getElementById('self-check-score-display');
+            if (scoreEl) {
+                const severity = yesCount === 0 ? { color: '#166534', bg: '#dcfce7', border: '#86efac', label: '양호 — 현재 인지 기능에 두드러진 자각 증상 없음' }
+                    : yesCount === 1 ? { color: '#92400e', bg: '#fef3c7', border: '#fcd34d', label: '주의 — 가벼운 인지 저하 자각 증상 있음' }
+                    : yesCount === 2 ? { color: '#9a3412', bg: '#ffedd5', border: '#fdba74', label: '경고 — 복수의 인지 저하 자각 증상 있음' }
+                    : { color: '#991b1b', bg: '#fee2e2', border: '#fca5a5', label: '위험 — 다수의 인지 저하 자각 증상 있음' };
+                scoreEl.innerHTML = `
+                    <div style="display:inline-block;background:${severity.bg};border:1.5px solid ${severity.border};border-radius:12px;padding:12px 20px;margin-bottom:8px;">
+                        <div style="font-size:2rem;font-weight:900;color:${severity.color};letter-spacing:-1px;">${yesCount} / 4</div>
+                        <div style="font-size:0.72rem;font-weight:700;color:${severity.color};margin-top:2px;">${severity.label}</div>
+                    </div>`;
+            }
+
+            // 항목별 표시
+            const itemsEl = document.getElementById('self-check-items');
+            if (itemsEl) {
+                itemsEl.innerHTML = questions.map(q => {
+                    const isYes = data[q.key] === 'yes';
+                    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:${isYes ? '#fff1f2' : '#f0fdf4'};border:1px solid ${isYes ? '#fecaca' : '#bbf7d0'};border-radius:10px;">
+                        <span style="font-size:0.78rem;font-weight:600;color:#374151;">${q.label}</span>
+                        <span style="font-size:0.75rem;font-weight:800;padding:3px 10px;border-radius:999px;background:${isYes ? '#dc2626' : '#16a34a'};color:#fff;">${isYes ? '예' : '아니오'}</span>
+                    </div>`;
+                }).join('');
+            }
         }
 
         function formatMoney(won) { return won.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
@@ -2087,7 +2341,7 @@
             let percent = cost > 0 ? Math.min(100, Math.round((coverage / cost) * 100)) : 100;
             let wonStr = formatMoney(cost) + '원'; let covStr = formatMoney(coverage) + '원';
 
-            document.getElementById('narrative-cost-web').innerHTML = `예상되는 장기 요양 위험 기간은 <span class="font-bold text-red-600">${currentGap.toFixed(1)}년</span>이며, 총 간병 비용은 약 <span class="font-bold text-red-600 text-base">${wonStr}</span>입니다. (경증/중증 분할 기준)`;
+            document.getElementById('narrative-cost-web').innerHTML = `예상되는 장기 요양 위험 기간은 <span style="font-weight:900;color:#dc2626;font-size:1.05em;">${currentGap.toFixed(1)}년</span>이며, 총 간병 비용은 약 <span style="font-weight:900;color:#dc2626;font-size:1.1em;letter-spacing:-0.5px;">${wonStr}</span>입니다. (경증/중증 분할 기준)`;
             document.getElementById('narrative-insurance-web').innerHTML = `입력하신 자산(보험)으로 예상 간병 비용의 약 <span class="font-bold text-green-600 text-base">${percent}%</span> (${covStr})를 방어할 수 있습니다.`;
             const pBar = document.getElementById('receipt-progress-web'); pBar.style.width = percent + '%'; pBar.className = percent >= 100 ? "bg-green-500 h-full transition-all duration-700 ease-out" : "bg-red-500 h-full transition-all duration-700 ease-out";
         }
@@ -2118,12 +2372,17 @@
             const safeScore = Math.max(0, Math.min(100, score));
             let statusText = safeScore < 40 ? "위험" : (safeScore < 70 ? "주의" : "우수");
             let statusColor = safeScore < 40 ? "text-red-600" : (safeScore < 70 ? "text-yellow-600" : "text-green-600");
+            let scoreStyle = safeScore < 40
+                ? `font-weight:900;color:#dc2626;font-size:1.1rem;letter-spacing:-0.5px;`
+                : safeScore < 70
+                    ? `font-weight:800;color:#d97706;font-size:1rem;`
+                    : `font-weight:800;color:#16a34a;font-size:1rem;`;
             let barColor = safeScore < 40 ? "bg-red-500" : (safeScore < 70 ? "bg-yellow-400" : "bg-green-500");
             let barColorHex = safeScore < 40 ? '#ef4444' : (safeScore < 70 ? '#f59e0b' : '#22c55e');
             return `
             <div class="mb-5 bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
                 <div class="px-4 pt-4 pb-2">
-                    <div class="flex justify-between items-end mb-4"><span class="font-bold text-gray-800 text-sm flex items-center gap-1">▪ ${title}</span><span class="font-extrabold ${statusColor} text-base">${safeScore}점 <span class="text-[10px] font-normal text-gray-500">(${statusText})</span></span></div>
+                    <div class="flex justify-between items-end mb-4"><span class="font-bold text-gray-800 text-sm flex items-center gap-1">▪ ${title}</span><span style="${scoreStyle}">${safeScore}점 <span style="font-size:0.68rem;font-weight:600;color:#6b7280;">(${statusText})</span></span></div>
                     <div style="width:100%;height:10px;background:#f1f5f9;border-radius:6px;overflow:hidden;margin-bottom:20px;border:1px solid #e2e8f0;">
                         <div style="width:0%;height:100%;background:${barColorHex};border-radius:6px;transition:width 1s ease;" data-fill-hex="${safeScore}"></div>
                     </div>
@@ -2200,7 +2459,7 @@
                     <span class="ml-auto bg-blue-50 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded border border-blue-100 uppercase tracking-widest">Personalized</span>
                 </div>
                 <p class="text-[11.5px] text-slate-700 font-bold mb-3.5 leading-relaxed">
-                    ${data.name}님의 예상 기대수명(<span class="text-blue-600 font-extrabold">${Number(physLife).toFixed(1)}세</span>)과 건강수명(<span class="text-indigo-600 font-extrabold">${Number(healthLife).toFixed(1)}세</span>)의 격차는 <span class="text-red-600 font-black text-[13px] bg-red-50/80 px-1 py-0.5 rounded border border-red-100">${Number(gap).toFixed(1)}년</span>입니다.<br>
+                    ${data.name}님의 예상 기대수명(<span class="text-blue-600 font-extrabold">${Number(physLife).toFixed(1)}세</span>)과 건강수명(<span style="color:#ea580c;font-weight:900;">${Number(healthLife).toFixed(1)}세</span>)의 격차는 <span style="color:#dc2626;font-weight:900;font-size:15px;background:#fff1f2;padding:1px 6px;border-radius:6px;border:1.5px solid #fca5a5;vertical-align:middle;display:inline-block;line-height:1.4;">${Number(gap).toFixed(1)}년</span>입니다.<br>
                     <span class="text-[10px] text-slate-500 font-medium mt-1 inline-block">건강한 수명 연장을 위해 아래의 맞춤형 가이드를 실천해 보세요.</span>
                 </p>
                 <div class="space-y-2.5">
@@ -2226,12 +2485,31 @@
         function renderBiologicalAge(bioAge, actualAge) {
             const diff = Math.round((bioAge - actualAge) * 10) / 10;
             const diffText = diff > 0
-                ? `실제보다 <span style="color:#dc2626;font-weight:900;">${diff}세 많음</span>`
+                ? `실제보다 <span style="color:#dc2626;font-weight:900;font-size:1.05em;">${diff}세 많음 ⚠️</span>`
                 : diff < 0
-                    ? `실제보다 <span style="color:#16a34a;font-weight:900;">${Math.abs(diff)}세 적음</span>`
+                    ? `실제보다 <span style="color:#16a34a;font-weight:900;">${Math.abs(diff)}세 적음 ✅</span>`
                     : `실제 나이와 <span style="color:#2563eb;font-weight:900;">동일</span>`;
 
+            // 인지 나이 경고 강조 표시
+            const cognitiveAge = data.cognitive_age;
+            let cognitiveWarningHtml = '';
+            if (cognitiveAge && cognitiveAge > actualAge) {
+                const cogDiff = cognitiveAge - actualAge;
+                cognitiveWarningHtml = `
+                    <div style="background:linear-gradient(135deg,#fff1f2,#fee2e2);border:2.5px solid #ef4444;border-radius:14px;padding:14px 18px;margin-top:12px;text-align:center;box-shadow:0 4px 16px rgba(220,38,38,0.18);">
+                        <div style="font-size:0.78rem;font-weight:800;color:#991b1b;margin-bottom:6px;letter-spacing:-0.2px;">⚠️ 인지 나이 경고</div>
+                        <div style="font-size:2.2rem;font-weight:900;color:#dc2626;letter-spacing:-2px;line-height:1.1;">${cognitiveAge}세</div>
+                        <div style="font-size:0.9rem;font-weight:900;color:#dc2626;margin-top:4px;">실제 나이보다 <span style="font-size:1.15rem;text-decoration:underline;text-underline-offset:3px;">${cogDiff}세 높음!</span></div>
+                        <div style="font-size:0.72rem;color:#b91c1c;margin-top:6px;line-height:1.6;">인지 나이가 실제 나이보다 높습니다.<br>뇌건강 관리가 시급합니다.</div>
+                    </div>`;
+            }
+
             const color = diff > 0 ? '#dc2626' : diff < 0 ? '#16a34a' : '#2563eb';
+            const bgStyle = diff > 0
+                ? 'background:linear-gradient(135deg,#fff1f2,#fee2e2);border:1.5px solid #fca5a5;'
+                : diff < 0
+                    ? 'background:#f0fdf4;border:1px solid #bbf7d0;'
+                    : 'background:#f8fafc;border:1px solid #e2e8f0;';
 
             const html = `
                 <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
@@ -2242,14 +2520,15 @@
                         </div>
                         <div style="font-size:1.8rem;color:#94a3b8;">→</div>
                         <div style="text-align:center;">
-                            <div style="font-size:0.7rem;color:#6d28d9;font-weight:700;margin-bottom:4px;">건강 나이</div>
-                            <div style="font-size:2.6rem;font-weight:900;color:${color};">${bioAge}세</div>
+                            <div style="font-size:0.7rem;color:${diff > 0 ? '#991b1b' : '#6d28d9'};font-weight:700;margin-bottom:4px;">건강 나이</div>
+                            <div style="font-size:2.8rem;font-weight:900;color:${color};letter-spacing:-2px;">${bioAge}세</div>
                         </div>
                     </div>
-                    <div style="background:#f8fafc;border-radius:10px;padding:10px 18px;font-size:0.82rem;text-align:center;border:1px solid #e2e8f0;">
+                    <div style="${bgStyle}border-radius:10px;padding:10px 18px;font-size:0.85rem;text-align:center;font-family:'Pretendard',sans-serif;">
                         ${diffText}
                         <div style="font-size:0.68rem;color:#94a3b8;margin-top:4px;">5대 건강 지수 종합 분석 결과</div>
                     </div>
+                    ${cognitiveWarningHtml}
                 </div>`;
 
             // 웹 결과 화면
@@ -2258,13 +2537,13 @@
 
             // RP 프리뷰
             const rpEl = document.getElementById('rp-bio-age');
-            if (rpEl) { rpEl.innerText = bioAge + '세'; rpEl.style.color = color; }
+            if (rpEl) { rpEl.innerText = bioAge + '세'; rpEl.style.color = color; rpEl.style.fontWeight = '900'; rpEl.style.letterSpacing = '-2px'; }
             const rpDiffEl = document.getElementById('rp-bio-age-diff');
             if (rpDiffEl) rpDiffEl.innerHTML = diffText;
 
             // PDF
             const pdfEl = document.getElementById('pdf-bio-age');
-            if (pdfEl) { pdfEl.innerText = bioAge + '세'; pdfEl.style.color = color; }
+            if (pdfEl) { pdfEl.innerText = bioAge + '세'; pdfEl.style.color = color; pdfEl.style.fontWeight = '900'; pdfEl.style.letterSpacing = '-2px'; }
             const pdfDiffEl = document.getElementById('pdf-bio-age-diff');
             if (pdfDiffEl) pdfDiffEl.innerHTML = diffText;
         }
@@ -2343,7 +2622,7 @@
 
         function renderSimulation(baseHealthLife, scoreVitality, scoreLifestyle) {
             const scenarios = [
-                { label: '현재 상태 유지', years: 0, color: '#64748b', icon: '→' },
+                { label: '현재 상태 유지', years: 0, color: '#ea580c', icon: '⚠️' },
                 { label: '운동 습관 개선 (주 3회 이상)', years: scoreVitality < 70 ? 1.5 : 0.7, color: '#3b82f6', icon: '💪' },
                 { label: '생활습관 전체 개선', years: scoreVitality < 70 ? 3.5 : 1.5, color: '#16a34a', icon: '🌟' }
             ];
@@ -2351,19 +2630,22 @@
             const maxLife = baseHealthLife + 4;
             const minLife = baseHealthLife - 2;
 
-            const bars = scenarios.map(s => {
+            const bars = scenarios.map((s, idx) => {
                 const life = baseHealthLife + s.years;
                 const pct = ((life - minLife) / (maxLife - minLife)) * 100;
+                const valueStyle = idx === 0
+                    ? `font-size:1rem;font-weight:900;color:#ea580c;letter-spacing:-1px;`
+                    : `font-size:0.85rem;font-weight:900;color:${s.color};`;
                 return `
                 <div style="margin-bottom:12px;">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
                         <span style="font-size:0.75rem;font-weight:700;color:#334155;">${s.icon} ${s.label}</span>
-                        <span style="font-size:0.85rem;font-weight:900;color:${s.color};">${life.toFixed(1)}세</span>
+                        <span style="${valueStyle}">${life.toFixed(1)}세</span>
                     </div>
                     <div style="height:10px;background:#e2e8f0;border-radius:5px;">
                         <div style="height:100%;width:${pct}%;background:${s.color};border-radius:5px;transition:width 0.7s;"></div>
                     </div>
-                    ${s.years > 0 ? `<div style="font-size:0.65rem;color:#16a34a;margin-top:2px;text-align:right;">+${s.years}년 연장</div>` : ''}
+                    ${s.years > 0 ? `<div style="font-size:0.65rem;color:#16a34a;margin-top:2px;text-align:right;">+${s.years}년 연장 가능</div>` : ''}
                 </div>`;
             }).join('');
 
@@ -2618,6 +2900,20 @@
                 }
             }
 
+            // 인지 기능 자가 체크(STEP 4) — wfSteps 수명 차감 포함
+            const selfYesCount = [data.self_forget, data.self_word, data.self_direction, data.self_fog]
+                .filter(v => v === 'yes').length;
+            if (selfYesCount >= 3) {
+                scoreCognitive = Math.max(0, scoreCognitive - 25);
+                wfSteps.push({ label: '인지 자가 체크(3~4개)', val: -2.0 });
+            } else if (selfYesCount === 2) {
+                scoreCognitive = Math.max(0, scoreCognitive - 15);
+                wfSteps.push({ label: '인지 자가 체크(2개)', val: -1.0 });
+            } else if (selfYesCount === 1) {
+                scoreCognitive = Math.max(0, scoreCognitive - 8);
+                wfSteps.push({ label: '인지 자가 체크(1개)', val: -0.5 });
+            }
+
             // ★ healthLife = physLife에서 wfSteps 항목 전체 누적 결과 (워터폴 차트 흐름과 완전 일치)
             // wfTotal = 과체중/흡연/음주/운동/수면/노쇠/인지 등 모든 감산 항목 합계
             // physLife 직접 차감 제거 완료 → 이중 차감 없음
@@ -2677,6 +2973,23 @@
             if (document.getElementById('res-health-age-web')) document.getElementById('res-health-age-web').innerText = healthLife.toFixed(1);
             if (document.getElementById('res-cog-age-web')) document.getElementById('res-cog-age-web').innerText = cogLife.toFixed(1);
             if (document.getElementById('res-gap-text-web')) document.getElementById('res-gap-text-web').innerText = `총 ${currentGap.toFixed(1)}년`;
+
+            // ★ 맞춤형 요양 자금 자동 계산 (웹 결과 화면)
+            (function updateCareRiskBox() {
+                const boxEl = document.getElementById('care-risk-box-web');
+                const yearsEl = document.getElementById('care-risk-years-web');
+                const costEl = document.getElementById('care-cost-web');
+                if (boxEl && yearsEl && costEl && currentGap > 0) {
+                    boxEl.style.display = 'block';
+                    yearsEl.innerText = currentGap.toFixed(1) + '년';
+                    const totalMonths = Math.round(currentGap * 12);
+                    const totalCost = totalMonths * 2000000;
+                    const costFormatted = totalCost >= 100000000
+                        ? (totalCost / 100000000).toFixed(1) + '억 ' + ((totalCost % 100000000) / 10000).toLocaleString() + '만원'
+                        : (totalCost / 10000).toLocaleString() + '만원';
+                    costEl.innerHTML = `고객님의 최소 간병 필요 자금은<br><span style="font-size:1.8rem;font-weight:900;color:#dc2626;letter-spacing:-1.5px;">약 ${costFormatted}</span><br>입니다`;
+                }
+            })();
 
 
             setTimeout(() => {
@@ -2941,7 +3254,23 @@
                 var rpPhys   = document.getElementById('rp-phys-age');   if(rpPhys)   rpPhys.innerText   = physLife.toFixed(1);
                 var rpHlth   = document.getElementById('rp-health-age'); if(rpHlth)   rpHlth.innerText   = healthLife.toFixed(1);
                 var rpGap    = document.getElementById('rp-gap-text');   if(rpGap)    rpGap.innerText    = '총 ' + currentGap.toFixed(1) + '년';
-                var rpGapH   = document.getElementById('rp-gap-huge');   if(rpGapH)   rpGapH.innerText   = '총 ' + currentGap.toFixed(1) + '년';
+                var rpGapH   = document.getElementById('rp-gap-huge');   if(rpGapH)   { rpGapH.innerText = '총 ' + currentGap.toFixed(1) + '년'; rpGapH.style.color = '#dc2626'; rpGapH.style.fontWeight = '900'; }
+
+                // ── G. 맞춤형 요양 자금 (PDF + RP 카드 업데이트) ──
+                (function updateCareCostCards() {
+                    var gapYears = currentGap;
+                    if (gapYears <= 0) return;
+                    var totalMonths = Math.round(gapYears * 12);
+                    var totalCost = totalMonths * 2000000;
+                    var costFormatted = totalCost >= 100000000
+                        ? (totalCost / 100000000).toFixed(1) + '억 ' + ((totalCost % 100000000) / 10000).toLocaleString() + '만원'
+                        : (totalCost / 10000).toLocaleString() + '만원';
+                    var costHtml = '고객님의 최소 간병 필요 자금은<br><span style="font-size:1.3rem;font-weight:900;color:#dc2626;letter-spacing:-1px;">약 ' + costFormatted + '</span><br>입니다';
+                    var pdfCostEl = document.getElementById('pdf-care-cost');
+                    if (pdfCostEl) pdfCostEl.innerHTML = '요양 위험기간: <b style="color:#dc2626;">' + gapYears.toFixed(1) + '년</b><br>' + costHtml;
+                    var rpCostEl = document.getElementById('rp-care-cost');
+                    if (rpCostEl) rpCostEl.innerHTML = '요양 위험기간: <b style="color:#dc2626;">' + gapYears.toFixed(1) + '년</b><br>' + costHtml;
+                })();
 
                 // ── E. inbody + 가이드 복사 (data-fill 애니 완료 후 실행) ──
                 setTimeout(function(){
@@ -3039,6 +3368,22 @@
                         wfEl.innerHTML = h+'</div>';
                     }
                 })();
+
+                // ★ 요양 자금 카드 재동기화 (PDF + RP)
+                (function refreshCareCostCards() {
+                    var gapYears = currentGap;
+                    if (!gapYears || gapYears <= 0) return;
+                    var totalMonths = Math.round(gapYears * 12);
+                    var totalCost = totalMonths * 2000000;
+                    var costFormatted = totalCost >= 100000000
+                        ? (totalCost / 100000000).toFixed(1) + '억 ' + ((totalCost % 100000000) / 10000).toLocaleString() + '만원'
+                        : (totalCost / 10000).toLocaleString() + '만원';
+                    var costHtml = '고객님의 최소 간병 필요 자금은<br><span style="font-size:1.3rem;font-weight:900;color:#dc2626;letter-spacing:-1px;">약 ' + costFormatted + '</span><br>입니다';
+                    var pdfCostEl = document.getElementById('pdf-care-cost');
+                    if (pdfCostEl) pdfCostEl.innerHTML = '요양 위험기간: <b style="color:#dc2626;">' + gapYears.toFixed(1) + '년</b><br>' + costHtml;
+                    var rpCostEl = document.getElementById('rp-care-cost');
+                    if (rpCostEl) rpCostEl.innerHTML = '요양 위험기간: <b style="color:#dc2626;">' + gapYears.toFixed(1) + '년</b><br>' + costHtml;
+                })();
             } catch(e) {
                 console.warn('[syncDataToDownloadView] 오류:', e);
             }
@@ -3072,9 +3417,9 @@
             var _health = currentHealthLife || (data.age + 1);
             var _gap    = currentGap || 0;
             el = document.getElementById('rp-phys-age');   if (el) el.innerText = _phys.toFixed(1);
-            el = document.getElementById('rp-health-age'); if (el) el.innerText = _health.toFixed(1);
-            el = document.getElementById('rp-gap-text');   if (el) el.innerText = '총 ' + _gap.toFixed(1) + '년';
-            el = document.getElementById('rp-gap-huge');   if (el) el.innerText = '총 ' + _gap.toFixed(1) + '년';
+            el = document.getElementById('rp-health-age'); if (el) { el.innerText = _health.toFixed(1); el.style.color = '#ea580c'; el.style.fontWeight = '900'; el.style.letterSpacing = '-1.5px'; }
+            el = document.getElementById('rp-gap-text');   if (el) { el.innerText = '총 ' + _gap.toFixed(1) + '년'; el.style.color = '#dc2626'; el.style.fontWeight = '900'; el.style.fontSize = '1.15rem'; el.style.letterSpacing = '-1px'; }
+            el = document.getElementById('rp-gap-huge');   if (el) { el.innerText = '총 ' + _gap.toFixed(1) + '년'; el.style.color = '#dc2626'; el.style.fontWeight = '900'; }
 
             // ③ 레이더 차트 — 순수 SVG
             el = document.getElementById('rp-radarSVG');
@@ -3238,8 +3583,8 @@
         async function submitConsultRequest() {
             const nameVal  = (document.getElementById('cs-name')?.value || '').trim();
             const phoneVal = (document.getElementById('cs-phone')?.value || '').trim();
-            const prefEl   = document.querySelector('input[name="cs-contact-pref"]:checked');
-            const memo     = (document.getElementById('cs-memo')?.value || '').trim();
+            const prefEl   = null;   // 입력 간소화 — 선호 연락 방법 항목 제거됨
+            const memo     = '';     // 입력 간소화 — 상담 희망 내용 항목 제거됨
             const errEl    = document.getElementById('cs-error');
 
             // 유효성 검사
@@ -3755,14 +4100,14 @@
     <div id="consult-modal" class="hidden"
         style="position:fixed;inset:0;z-index:10001;align-items:flex-end;justify-content:center;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);"
         onclick="if(event.target===this)closeConsultModal()">
-        <div id="consult-modal-inner" style="background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:0 0 40px;box-shadow:0 -8px 40px rgba(0,0,0,0.25);animation:slideUp 0.35s ease;max-height:92vh;overflow-y:auto;">
+        <div id="consult-modal-inner" style="background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:0 0 32px;box-shadow:0 -8px 40px rgba(0,0,0,0.25);animation:slideUp 0.35s ease;max-height:92vh;overflow-y:auto;">
 
             <!-- 헤더 -->
             <div style="background:linear-gradient(135deg,#1d4ed8,#4338ca);border-radius:24px 24px 0 0;padding:22px 24px 18px;">
                 <div style="display:flex;justify-content:space-between;align-items:center;">
                     <div>
-                        <div style="font-size:1rem;font-weight:900;color:#fff;margin-bottom:3px;">🩺 전문가 상세 상담 신청</div>
-                        <div style="font-size:0.72rem;color:#bfdbfe;">건강수명 분석 결과를 토대로 맞춤 상담을 제공합니다</div>
+                        <div style="font-size:1rem;font-weight:900;color:#fff;margin-bottom:3px;">📋 맞춤형 분석 리포트 요청</div>
+                        <div style="font-size:0.72rem;color:#bfdbfe;">성함과 연락처만 입력하시면 무료로 발송됩니다</div>
                     </div>
                     <button onclick="closeConsultModal()" style="background:rgba(255,255,255,0.15);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
                 </div>
@@ -3771,71 +4116,51 @@
             <div style="padding:20px 24px 0;">
 
                 <!-- 결과 요약 카드 (자동 채워짐) -->
-                <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:14px;padding:14px;margin-bottom:18px;">
-                    <div style="font-size:0.78rem;font-weight:800;color:#0c4a6e;margin-bottom:10px;">📊 나의 분석 결과 요약</div>
+                <div style="background:#fff1f2;border:1.5px solid #fecaca;border-radius:14px;padding:14px;margin-bottom:18px;">
+                    <div style="font-size:0.78rem;font-weight:800;color:#991b1b;margin-bottom:10px;">⚠️ 나의 분석 결과 요약</div>
                     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center;">
                         <div style="background:#fff;border-radius:10px;padding:10px 4px;border:1px solid #e0f2fe;">
                             <div style="font-size:0.6rem;color:#64748b;margin-bottom:3px;">예측 기대수명</div>
                             <div id="cs-phys-age" style="font-size:1.3rem;font-weight:900;color:#1e293b;">—</div>
                             <div style="font-size:0.6rem;color:#64748b;">세</div>
                         </div>
-                        <div style="background:#fff;border-radius:10px;padding:10px 4px;border:1px solid #bbf7d0;">
-                            <div style="font-size:0.6rem;color:#16a34a;margin-bottom:3px;">예측 건강수명</div>
-                            <div id="cs-health-age" style="font-size:1.3rem;font-weight:900;color:#16a34a;">—</div>
+                        <div style="background:#fff1f2;border-radius:10px;padding:10px 4px;border:1px solid #fca5a5;">
+                            <div style="font-size:0.6rem;color:#ea580c;font-weight:700;margin-bottom:3px;">예측 건강수명</div>
+                            <div id="cs-health-age" style="font-size:1.4rem;font-weight:900;color:#ea580c;letter-spacing:-1px;">—</div>
                             <div style="font-size:0.6rem;color:#64748b;">세</div>
                         </div>
-                        <div style="background:#fff;border-radius:10px;padding:10px 4px;border:1px solid #fecaca;">
-                            <div style="font-size:0.6rem;color:#dc2626;margin-bottom:3px;">요양 위험기간</div>
-                            <div id="cs-gap" style="font-size:1.3rem;font-weight:900;color:#dc2626;">—</div>
-                            <div style="font-size:0.6rem;color:#64748b;">년</div>
+                        <div style="background:#fff1f2;border-radius:10px;padding:10px 4px;border:2px solid #fca5a5;">
+                            <div style="font-size:0.6rem;color:#dc2626;font-weight:700;margin-bottom:3px;">요양 위험기간</div>
+                            <div id="cs-gap" style="font-size:1.5rem;font-weight:900;color:#dc2626;letter-spacing:-1px;">—</div>
+                            <div style="font-size:0.6rem;color:#991b1b;font-weight:600;">년</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 연락처 확인 입력 -->
+                <!-- 입력 2칸: 성함 + 연락처만 -->
                 <div style="margin-bottom:14px;">
                     <label style="display:block;font-size:0.82rem;font-weight:700;color:#1e293b;margin-bottom:6px;">성함 <span style="color:#ef4444;">*</span></label>
                     <input id="cs-name" type="text" placeholder="이름을 입력해 주세요"
-                        style="width:100%;padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:0.9rem;box-sizing:border-box;outline:none;transition:border-color 0.2s;"
+                        style="width:100%;padding:13px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:0.95rem;box-sizing:border-box;outline:none;transition:border-color 0.2s;"
                         onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#e2e8f0'">
                 </div>
-                <div style="margin-bottom:14px;">
+                <div style="margin-bottom:20px;">
                     <label style="display:block;font-size:0.82rem;font-weight:700;color:#1e293b;margin-bottom:6px;">연락처 <span style="color:#ef4444;">*</span></label>
                     <input id="cs-phone" type="tel" inputmode="numeric" placeholder="010-0000-0000"
-                        style="width:100%;padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:0.9rem;box-sizing:border-box;outline:none;"
+                        style="width:100%;padding:13px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:0.95rem;box-sizing:border-box;outline:none;transition:border-color 0.2s;"
                         onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#e2e8f0'"
                         oninput="this.value=this.value.replace(/[^0-9-]/g,'')">
-                </div>
-                <div style="margin-bottom:18px;">
-                    <label style="display:block;font-size:0.82rem;font-weight:700;color:#1e293b;margin-bottom:8px;">선호 연락 방법</label>
-                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-                        <label style="display:flex;align-items:center;gap:6px;padding:10px;border:1.5px solid #e2e8f0;border-radius:10px;cursor:pointer;font-size:0.8rem;font-weight:600;color:#334155;">
-                            <input type="radio" name="cs-contact-pref" value="전화" style="accent-color:#2563eb;"> 📞 전화
-                        </label>
-                        <label style="display:flex;align-items:center;gap:6px;padding:10px;border:1.5px solid #e2e8f0;border-radius:10px;cursor:pointer;font-size:0.8rem;font-weight:600;color:#334155;">
-                            <input type="radio" name="cs-contact-pref" value="문자" style="accent-color:#2563eb;"> 💬 문자
-                        </label>
-                        <label style="display:flex;align-items:center;gap:6px;padding:10px;border:1.5px solid #e2e8f0;border-radius:10px;cursor:pointer;font-size:0.8rem;font-weight:600;color:#334155;">
-                            <input type="radio" name="cs-contact-pref" value="카카오" checked style="accent-color:#2563eb;"> 🟡 카카오
-                        </label>
-                    </div>
-                </div>
-                <div style="margin-bottom:18px;">
-                    <label style="display:block;font-size:0.82rem;font-weight:700;color:#1e293b;margin-bottom:6px;">상담 희망 내용 <span style="font-size:0.72rem;color:#94a3b8;">(선택)</span></label>
-                    <textarea id="cs-memo" rows="2" placeholder="궁금한 점이나 상담 희망 사항을 자유롭게 적어주세요"
-                        style="width:100%;padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:0.85rem;box-sizing:border-box;resize:none;outline:none;font-family:inherit;"
-                        onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#e2e8f0'"></textarea>
                 </div>
 
                 <!-- 오류 메시지 -->
                 <div id="cs-error" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px 14px;font-size:0.78rem;color:#dc2626;font-weight:700;margin-bottom:12px;"></div>
 
-                <!-- 제출 버튼 -->
+                <!-- 제출 버튼 — 심리적 개입 문구 -->
                 <button id="cs-submit-btn" onclick="submitConsultRequest()"
-                    style="width:100%;padding:16px;background:linear-gradient(135deg,#1d4ed8,#4338ca);color:#fff;border:none;border-radius:14px;font-size:0.98rem;font-weight:900;cursor:pointer;box-shadow:0 4px 16px rgba(37,99,235,0.4);letter-spacing:-0.3px;transition:opacity 0.2s;">
-                    🩺 상담 신청 완료하기
+                    style="width:100%;padding:17px 14px;background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;border:none;border-radius:14px;font-size:0.95rem;font-weight:900;cursor:pointer;box-shadow:0 4px 20px rgba(220,38,38,0.45);letter-spacing:-0.3px;transition:opacity 0.2s;line-height:1.4;">
+                    나의 맞춤형 분석 리포트 요청하기 (무료)
                 </button>
-                <p style="font-size:0.65rem;color:#94a3b8;text-align:center;margin-top:10px;line-height:1.6;">입력하신 정보는 상담 목적으로만 사용됩니다.<br>영업일 기준 1일 이내 담당자가 연락드립니다.</p>
+                <p style="font-size:0.65rem;color:#94a3b8;text-align:center;margin-top:10px;line-height:1.6;">입력하신 정보는 리포트 발송 목적으로만 사용됩니다.<br>영업일 기준 1일 이내 담당자가 연락드립니다.</p>
             </div>
         </div>
     </div>
@@ -4004,9 +4329,13 @@
         appContainer.style.left = '-9999px';
 
         // 결과 화면 강제 표시
+        document.getElementById('step-alzwin')?.style && (document.getElementById('step-alzwin').style.display = 'none');
+        document.getElementById('alzwin-header')?.style && (document.getElementById('alzwin-header').style.display = 'none');
+        document.getElementById('steps-wrapper')?.style && (document.getElementById('steps-wrapper').style.display = 'block');
         document.getElementById('step-1')?.classList.add('hidden');
         document.getElementById('step-2')?.classList.add('hidden');
         document.getElementById('step-3')?.classList.add('hidden');
+        document.getElementById('step-4')?.classList.add('hidden');
         document.getElementById('step-result')?.classList.remove('hidden');
         document.getElementById('bottom-bar')?.classList.add('hidden');
 
@@ -4038,6 +4367,75 @@
             }, 100);
         }, 100);
     }
+    </script>
+
+    <!-- ★ 결과 화면 전용 플로팅 CTA 버튼 -->
+    <div id="floating-cta" style="display:none;position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;z-index:9000;padding:12px 16px 20px;background:linear-gradient(to top, rgba(255,255,255,1) 60%, rgba(255,255,255,0));pointer-events:none;">
+        <button onclick="openConsultModal()"
+            style="pointer-events:auto;width:100%;padding:17px 20px;background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;border:none;border-radius:16px;font-size:0.95rem;font-weight:900;cursor:pointer;box-shadow:0 6px 24px rgba(220,38,38,0.5);display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:-0.3px;position:relative;overflow:hidden;animation:floatPulse 2.4s ease-in-out infinite;">
+            <span style="font-size:1.1rem;">📋</span>
+            <span>나의 맞춤형 분석 리포트 요청하기 (무료)</span>
+            <span style="position:absolute;right:14px;font-size:0.65rem;background:rgba(255,255,255,0.22);padding:2px 8px;border-radius:999px;white-space:nowrap;">무료</span>
+        </button>
+    </div>
+
+    <style>
+        @keyframes floatPulse {
+            0%, 100% { box-shadow: 0 6px 24px rgba(220,38,38,0.5); transform: translateY(0); }
+            50%       { box-shadow: 0 10px 32px rgba(220,38,38,0.65); transform: translateY(-3px); }
+        }
+    </style>
+
+    <script>
+        // 결과 화면 진입 시 플로팅 버튼 표시, 다른 화면에서는 숨김
+        (function initFloatingCTA() {
+            var _floatObserver = null;
+
+            function showFloatingCTA() {
+                var btn = document.getElementById('floating-cta');
+                if (btn) { btn.style.display = 'block'; btn.style.animation = 'none'; setTimeout(function(){ btn.style.animation = ''; }, 10); }
+            }
+            function hideFloatingCTA() {
+                var btn = document.getElementById('floating-cta');
+                if (btn) btn.style.display = 'none';
+            }
+
+            // proceedToResults 완료 후 step-result가 보일 때 자동 표시
+            var orig = window.proceedToResults;
+            // MutationObserver로 step-result hidden 클래스 제거 감지
+            document.addEventListener('DOMContentLoaded', function() {
+                var stepResult = document.getElementById('step-result');
+                if (!stepResult) return;
+                _floatObserver = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(m) {
+                        if (m.type === 'attributes' && m.attributeName === 'class') {
+                            if (!stepResult.classList.contains('hidden')) {
+                                setTimeout(showFloatingCTA, 300);
+                            } else {
+                                hideFloatingCTA();
+                            }
+                        }
+                    });
+                });
+                _floatObserver.observe(stepResult, { attributes: true });
+            });
+
+            // 미리보기(PDF/JPG) 열릴 때 플로팅 버튼 숨기기 / 닫을 때 다시 표시
+            var origShowPreview = window.showA4Preview;
+            window.showA4Preview = function() {
+                hideFloatingCTA();
+                if (origShowPreview) origShowPreview.apply(this, arguments);
+            };
+            var origHidePreview = window.hideA4Preview;
+            window.hideA4Preview = function() {
+                if (origHidePreview) origHidePreview.apply(this, arguments);
+                // 결과 화면이 보이는 상태라면 다시 표시
+                var stepResult = document.getElementById('step-result');
+                if (stepResult && !stepResult.classList.contains('hidden')) {
+                    setTimeout(showFloatingCTA, 200);
+                }
+            };
+        })();
     </script>
 
 </body>
